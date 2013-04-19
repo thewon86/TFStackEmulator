@@ -58,6 +58,7 @@ namespace TFStackEmulator
             }
             finally
             {
+                Emulator.Response -= Emulator_Response;
                 Stream.Dispose();
                 TryDisconnect();
             }
