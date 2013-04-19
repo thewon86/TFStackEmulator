@@ -2,23 +2,48 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using TFStackEmulator.Devices;
 
 namespace TFStackEmulator
 {
-    //TODO: device-simulation (for regular callbacks)
     public class StackEmulator
     {
         public static readonly UID BroadcastUID = new UID(0);
 
-        private Dictionary<UID, Device> Devices = new Dictionary<UID, Device>();
-
         public event ResponseEventHandler Response;
         public delegate void ResponseEventHandler(object sender, ResponseEventArgs args);
 
+        private Dictionary<UID, Device> Devices = new Dictionary<UID, Device>();
+
+        private Thread SimulationThread;
+
+        private BlockingConcurrentQueue<Packet> RequestQueue = new BlockingConcurrentQueue<Packet>();
+
         public StackEmulator()
         {
+            SimulationThread = new Thread(SimulationLoop);
+            SimulationThread.Name = "Stack-Simulation";
+            SimulationThread.IsBackground = true;
+        }
 
+        private void SimulationLoop()
+        {
+            while (true)
+            {
+                Packet request;
+                if (RequestQueue.TryDequeue(out request, 1))
+                {
+                    RouteAndDispatchRequest(request);
+                }
+
+                //TODO: call tick-task on devices approx. each ms
+            }
+        }
+
+        public void Start()
+        {
+            SimulationThread.Start();
         }
 
         public void AddDevice(Device device)
@@ -28,7 +53,7 @@ namespace TFStackEmulator
 
         public void HandleRequest(Packet packet)
         {
-            RouteAndDispatchRequest(packet);
+            RequestQueue.Enqueue(packet);
         }
 
         private void RouteAndDispatchRequest(Packet packet)

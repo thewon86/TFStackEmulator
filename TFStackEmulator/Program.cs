@@ -18,6 +18,8 @@ namespace TFStackEmulator
             emulator.AddDevice(device);
             emulator.AddDevice(device2);
 
+            emulator.Start();
+
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sock.Bind(new IPEndPoint(IPAddress.Any, 4224));
             sock.Listen(3);

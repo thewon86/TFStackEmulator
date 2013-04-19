@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base58.cs" />
+    <Compile Include="BlockingQueue.cs" />
     <Compile Include="Devices\Device.cs" />
     <Compile Include="Devices\EnumeratableDevice.cs" />
     <Compile Include="Devices\RandomTemperatureBricklet.cs" />
