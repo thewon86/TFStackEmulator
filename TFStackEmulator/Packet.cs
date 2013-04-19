@@ -26,26 +26,27 @@ namespace TFStackEmulator
 
         public byte[] Payload { get; set; }
 
-        public byte FunctionID { get; private set; }
+        public byte FunctionID { get; set; }
 
-        public int SequenceNumber { get; private set; }
+        public int SequenceNumber { get; set; }
 
-        public bool ResponseExpected { get; private set; }
+        public bool ResponseExpected { get; set; }
 
-        public byte ErrorCode { get; private set; }
+        public byte ErrorCode { get; set; }
 
-        public Packet(UID uid, byte payloadLength, byte functionId, int sequenceNumber, bool responseExpected)
+        public Packet(UID uid, byte payloadLength, byte functionId, int sequenceNumber, bool responseExpected, byte errorCode = 0)
         {
             UID = uid;
             PayloadSize = payloadLength;
             FunctionID = functionId;
             SequenceNumber = sequenceNumber;
             ResponseExpected = responseExpected;
+            ErrorCode = errorCode;
         }
 
         private Packet(byte[] data)
         {
-            UID = new UID(ByteArrayToLongUID(data));
+            UID = new UID(LEConverter.IntFrom(0, data));
             PayloadSize = (byte)(data[4] - HeaderSize);
             FunctionID = data[5];
             SequenceNumber = (byte)((((int)data[6]) >> 4) & 0x0F);
@@ -72,8 +73,7 @@ namespace TFStackEmulator
 
         public Packet Copy()
         {
-            Packet copy = new Packet(UID, PayloadSize, FunctionID, SequenceNumber, ResponseExpected);
-            copy.ErrorCode = ErrorCode;
+            Packet copy = new Packet(UID, PayloadSize, FunctionID, SequenceNumber, ResponseExpected, ErrorCode);
             Array.Copy(Payload, copy.Payload, PayloadSize);
             return copy;
         }
@@ -103,22 +103,12 @@ namespace TFStackEmulator
                 int newBytes = stream.Read(buffer, read, buffer.Length - read);
                 if (newBytes == 0)
                 {
-                    throw new Exception("Stream was closed before enough bytes were read");
+                    throw new IOException("Stream was closed before enough bytes were read");
                 }
                 read += newBytes;
             }
 
             return buffer;
-        }
-
-        private static int ByteArrayToLongUID(byte[] data)
-        {
-            if (data.Length < 4)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return LEConverter.IntFrom(0, data);
         }
     }
 }
