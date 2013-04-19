@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace TFStackEmulator
 {
@@ -11,16 +12,20 @@ namespace TFStackEmulator
     {
         private NetworkStream Stream;
         private Socket ClientSocket;
-
         private StackEmulator Emulator;
+
+        private Thread RequestHandler;
 
         public NetworkStackConnector(Socket clientSocket, StackEmulator emulator)
         {
             ClientSocket = clientSocket;
             Emulator = emulator;
             Stream = new NetworkStream(clientSocket);
+            RequestHandler = new Thread(RequestLoop);
 
             ClientSocket.NoDelay = true;
+            RequestHandler.Name = "NetworkStackConnector";
+            RequestHandler.IsBackground = true;
             Emulator.Response += Emulator_Response;
         }
 
@@ -30,26 +35,41 @@ namespace TFStackEmulator
             Stream.Flush();
         }
 
-        public void ServeClient()
+        public void Start()
+        {
+            if (RequestHandler.IsAlive)
+            {
+                throw new InvalidOperationException("Connector already started");
+            }
+
+            RequestHandler.Start();
+        }
+
+        private void RequestLoop()
         {
             Console.WriteLine("Serving client...");
             try
             {
-                while (true)
-                {
-                    var packet = Packet.ReadFrom(Stream);
-
-                    Emulator.HandleRequest(packet);
-                }
+                HandleRequests();
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e);
+                Console.WriteLine("Connection aborted!");
             }
             finally
             {
                 Stream.Dispose();
                 TryDisconnect();
+            }
+        }
+
+        private void HandleRequests()
+        {
+            while (true)
+            {
+                var packet = Packet.ReadFrom(Stream);
+
+                Emulator.HandleRequest(packet);
             }
         }
 

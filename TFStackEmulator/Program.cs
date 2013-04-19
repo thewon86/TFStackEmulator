@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using TFStackEmulator.Devices;
 
 namespace TFStackEmulator
@@ -26,8 +25,7 @@ namespace TFStackEmulator
 	        {
                 var client = sock.Accept();
                 var connector = new NetworkStackConnector(client, emulator);
-                Thread t = new Thread(connector.ServeClient);
-                t.Start();
+                connector.Start();
 	        }
         }
     }
