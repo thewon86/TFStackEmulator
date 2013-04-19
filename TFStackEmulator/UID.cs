@@ -28,7 +28,6 @@ namespace TFStackEmulator
 
         public UID(string uid)
         {
-            StringRepresentation = uid;
             long uidTmp = Base58.Decode(uid);
             if (uidTmp > 0xFFFFFFFFL)
             {
@@ -45,10 +44,7 @@ namespace TFStackEmulator
 
             IntRepresentation = (int)uidTmp;
 
-            if (StringRepresentation != Base58.Encode(IntRepresentation))
-            {
-                throw new ArgumentException("Invalid UID, it is probably too long.");
-            }
+            StringRepresentation = Base58.Encode(IntRepresentation); //make sure to have shortended representation saved
         }
 
         public int ToInt()
