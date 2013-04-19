@@ -31,8 +31,15 @@ namespace TFStackEmulator
 
         private void Emulator_Response(object sender, ResponseEventArgs args)
         {
-            args.Response.WriteTo(Stream);
-            Stream.Flush();
+            try
+            {
+                args.Response.WriteTo(Stream);
+                Stream.Flush();
+            }
+            catch
+            {
+                //don't throw out of event-handler
+            }
         }
 
         public void Start()
