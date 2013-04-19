@@ -18,11 +18,7 @@ namespace TFStackEmulator
 
         public StackEmulator()
         {
-            //TODO: extract test-setup to the outside
-            var device = new RandomTemperatureBricklet(new UID("myu1d"));
-            var device2 = new RandomTemperatureBricklet(new UID("myu2d"));
-            AddDevice(device);
-            AddDevice(device2);
+
         }
 
         public void AddDevice(Device device)

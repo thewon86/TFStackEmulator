@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using TFStackEmulator.Devices;
 
 namespace TFStackEmulator
 {
@@ -12,14 +13,20 @@ namespace TFStackEmulator
     {
         static void Main(string[] args)
         {
+            var emulator = new StackEmulator();
+            var device = new RandomTemperatureBricklet(new UID("myu1d"));
+            var device2 = new RandomTemperatureBricklet(new UID("myu2d"));
+            emulator.AddDevice(device);
+            emulator.AddDevice(device2);
+
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sock.Bind(new IPEndPoint(IPAddress.Any, 4224));
             sock.Listen(3);
             while (true)
 	        {
                 var client = sock.Accept();
-                var emulator = new NetworkStackConnector(client);
-                Thread t = new Thread(emulator.ServeClient);
+                var connector = new NetworkStackConnector(client, emulator);
+                Thread t = new Thread(connector.ServeClient);
                 t.Start();
 	        }
         }

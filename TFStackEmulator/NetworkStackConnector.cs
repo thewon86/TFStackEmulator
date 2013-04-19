@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using TFStackEmulator.Devices;
 
 namespace TFStackEmulator
 {
@@ -13,16 +12,15 @@ namespace TFStackEmulator
         private NetworkStream Stream;
         private Socket ClientSocket;
 
-        //TODO: extract emulator to outside (possibility to have multiple connectors per emulator)
-        private StackEmulator Emulator = new StackEmulator();
+        private StackEmulator Emulator;
 
-        public NetworkStackConnector(Socket clientSocket)
+        public NetworkStackConnector(Socket clientSocket, StackEmulator emulator)
         {
             ClientSocket = clientSocket;
-            ClientSocket.NoDelay = true;
-
+            Emulator = emulator;
             Stream = new NetworkStream(clientSocket);
 
+            ClientSocket.NoDelay = true;
             Emulator.Response += Emulator_Response;
         }
 
