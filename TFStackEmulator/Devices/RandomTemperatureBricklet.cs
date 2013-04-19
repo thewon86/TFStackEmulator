@@ -40,6 +40,7 @@ namespace TFStackEmulator.Devices
                     ResetTemperatureCallback();
                     if (packet.ResponseExpected)
                     {
+                        packet.PayloadSize = 0;
                         return packet;
                     }
                     return null;
