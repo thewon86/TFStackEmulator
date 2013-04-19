@@ -13,9 +13,24 @@ namespace TFStackEmulator.Devices
 
         public UID UID { get; private set; }
 
-        protected EnumeratableDevice(UID uid)
+        public UID ConnectedUID { get; set; }
+
+        public char Position { get; set; }
+
+        public Version HardwareVersion { get; set; }
+
+        public Version FirmwareVersion { get; set; }
+
+        public UInt16 DeviceIdentifier { get; private set; }
+
+        protected EnumeratableDevice(UID uid, UInt16 deviceIdentifier)
         {
             UID = uid;
+            DeviceIdentifier = deviceIdentifier;
+            Position = 'a'; //TODO: better default depending on brick/bricklet?
+            ConnectedUID = new UID(0);
+            HardwareVersion = new Version(1, 0, 0);
+            FirmwareVersion = new Version(1, 0, 0);
         }
 
         protected abstract Packet OnUnhandledRequest(Packet packet);
@@ -39,23 +54,30 @@ namespace TFStackEmulator.Devices
             using (MemoryStream stream = new MemoryStream(callbackPacket.Payload))
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.ASCII))
             {
-                char[] myUID = new char[8];
-                char[] myShortUID = UID.ToString().ToCharArray();
-                Array.Copy(myShortUID, myUID, myShortUID.Length);
-                char[] connectedUID = new char[8];
+                char[] myUID = CreateUIDCharArray(UID);
+                char[] connectedUID = CreateUIDCharArray(ConnectedUID);
                 writer.Write(myUID);
                 writer.Write(connectedUID);
-                writer.Write('a');
-                writer.Write((byte)1);
-                writer.Write((byte)0);
-                writer.Write((byte)0);
-                writer.Write((byte)1);
-                writer.Write((byte)0);
-                writer.Write((byte)0);
-                writer.Write((UInt16)216);
+                writer.Write(Position);
+                writer.Write(HardwareVersion.Major);
+                writer.Write(HardwareVersion.Minor);
+                writer.Write(HardwareVersion.Revision);
+                writer.Write(FirmwareVersion.Major);
+                writer.Write(FirmwareVersion.Minor);
+                writer.Write(FirmwareVersion.Revision);
+                writer.Write(DeviceIdentifier);
                 writer.Write((byte)0);
             }
             return callbackPacket;
+        }
+
+        private char[] CreateUIDCharArray(UID uid)
+        {
+            //TODO: there has to be a better way...
+            char[] fullArray = new char[8];
+            char[] smallArray = uid.ToString().ToCharArray();
+            Array.Copy(smallArray, fullArray, smallArray.Length);
+            return fullArray;
         }
 
         public abstract void OnTick(PacketSink sink);
