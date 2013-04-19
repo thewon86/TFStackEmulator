@@ -10,5 +10,7 @@ namespace TFStackEmulator.Devices
         UID UID { get; }
 
         Packet HandleRequest(Packet packet);
+
+        void OnTick(PacketSink sink);
     }
 }

@@ -29,6 +29,7 @@ namespace TFStackEmulator
 
         private void SimulationLoop()
         {
+            PacketSink sink = new DelegatePacketSink(OnResponse);
             while (true)
             {
                 Packet request;
@@ -37,7 +38,10 @@ namespace TFStackEmulator
                     RouteAndDispatchRequest(request);
                 }
 
-                //TODO: call tick-task on devices approx. each ms
+                foreach (var device in Devices.Values)
+                {
+                    device.OnTick(sink);
+                }
             }
         }
 

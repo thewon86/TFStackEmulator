@@ -57,5 +57,7 @@ namespace TFStackEmulator.Devices
             }
             return callbackPacket;
         }
+
+        public abstract void OnTick(PacketSink sink);
     }
 }

@@ -43,11 +43,13 @@
   <ItemGroup>
     <Compile Include="Base58.cs" />
     <Compile Include="BlockingQueue.cs" />
+    <Compile Include="DelegatePacketSink.cs" />
     <Compile Include="Devices\Device.cs" />
     <Compile Include="Devices\EnumeratableDevice.cs" />
     <Compile Include="Devices\RandomTemperatureBricklet.cs" />
     <Compile Include="LEConverter.cs" />
     <Compile Include="Packet.cs" />
+    <Compile Include="PacketSink.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NetworkStackConnector.cs" />
