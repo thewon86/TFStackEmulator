@@ -46,7 +46,9 @@
     <Compile Include="DelegatePacketSink.cs" />
     <Compile Include="Devices\Device.cs" />
     <Compile Include="Devices\EnumeratableDevice.cs" />
+    <Compile Include="Devices\RandomAmbientLightBricklet.cs" />
     <Compile Include="Devices\RandomTemperatureBricklet.cs" />
+    <Compile Include="Devices\SingleValueDevice.cs" />
     <Compile Include="LEConverter.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketSink.cs" />

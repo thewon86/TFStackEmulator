@@ -14,7 +14,7 @@ namespace TFStackEmulator
         {
             var emulator = new StackEmulator();
             var device = new RandomTemperatureBricklet(new UID("myu1d"));
-            var device2 = new RandomTemperatureBricklet(new UID("myu2d"));
+            var device2 = new RandomAmbientLightBricklet(new UID("myu2d"));
             device2.Position = 'b';
             emulator.AddDevice(device);
             emulator.AddDevice(device2);
