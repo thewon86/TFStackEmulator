@@ -18,7 +18,7 @@ namespace TFStackEmulator
             while (true)
 	        {
                 var client = sock.Accept();
-                var emulator = new StackEmulator(client);
+                var emulator = new NetworkStackConnector(client);
                 Thread t = new Thread(emulator.ServeClient);
                 t.Start();
 	        }

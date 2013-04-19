@@ -1,93 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using TFStackEmulator.Devices;
 
 namespace TFStackEmulator
 {
-    //TODO: split networking from device-simulation
     //TODO: device-simulation (for regular callbacks)
     public class StackEmulator
     {
         public static readonly UID BroadcastUID = new UID(0);
 
-        private NetworkStream Stream;
-        private Socket ClientSocket;
-        private Dictionary<UID, Device> Devices = new Dictionary<UID,Device>();
+        private Dictionary<UID, Device> Devices = new Dictionary<UID, Device>();
 
-        public StackEmulator(Socket clientSocket)
+        public event ResponseEventHandler Response;
+        public delegate void ResponseEventHandler(object sender, ResponseEventArgs args);
+
+        public StackEmulator()
         {
-            ClientSocket = clientSocket;
-            ClientSocket.NoDelay = true;
-
-            Stream = new NetworkStream(clientSocket);
-
             //TODO: extract test-setup to the outside
             var device = new RandomTemperatureBricklet(new UID("myu1d"));
             var device2 = new RandomTemperatureBricklet(new UID("myu2d"));
-            Devices.Add(device.UID, device);
-            Devices.Add(device2.UID, device2);
+            AddDevice(device);
+            AddDevice(device2);
         }
 
-        public void ServeClient()
+        public void AddDevice(Device device)
         {
-            Console.WriteLine("Serving client...");
-            try
+            Devices.Add(device.UID, device);
+        }
+
+        public void HandleRequest(Packet packet)
+        {
+            RouteAndDispatchRequest(packet);
+        }
+
+        private void RouteAndDispatchRequest(Packet packet)
+        {
+            if (packet.UID.Equals(BroadcastUID))
             {
-                while (true)
+                foreach (Device device in Devices.Values)
                 {
-                    var packet = Packet.ReadFrom(Stream);
-                    Device device;
-                    if (Devices.TryGetValue(packet.UID, out device))
-                    {
-                        DispatchPacket(packet, device);
-                    }
-                    else if (packet.UID.Equals(BroadcastUID))
-                    {
-                        foreach (Device currentDevice in Devices.Values)
-                        {
-                            DispatchPacket(packet, currentDevice);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No Device for UID {0}", packet.UID);
-                    }
+                    DispatchRequest(packet, device);
                 }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine(e);
-            }
-            finally
-            {
-                Stream.Dispose();
-                TryDisconnect();
+                Device device;
+                if (Devices.TryGetValue(packet.UID, out device))
+                {
+                    DispatchRequest(packet, device);
+                }
+                else
+                {
+                    Console.WriteLine("No Device for UID {0}", packet.UID);
+                }
             }
         }
 
-        private void DispatchPacket(Packet packet, Device device)
+        private void DispatchRequest(Packet packet, Device device)
         {
             Packet response = device.HandleRequest(packet.Copy());
             if (response != null)
             {
-                response.WriteTo(Stream);
-                Stream.Flush();
+                OnResponse(response);
             }
         }
 
-        private void TryDisconnect()
+        protected void OnResponse(Packet response)
         {
-            try
+            var handler = Response;
+            if (handler != null)
             {
-                ClientSocket.Disconnect(false);
+                handler(this, new ResponseEventArgs(response));
             }
-            catch
-            {
-            }
+        }
+    }
+
+    public class ResponseEventArgs : EventArgs
+    {
+        public Packet Response { get; private set; }
+
+        public ResponseEventArgs(Packet response)
+        {
+            Response = response;
         }
     }
 }
