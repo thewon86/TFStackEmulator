@@ -52,7 +52,7 @@ namespace TFStackEmulator.Devices
 
         public override void OnTick(PacketSink sink)
         {
-            ProcessTemperatureCallback(sink);
+            ProcessValueCallback(sink);
         }
 
         private void ResetValueCallback()
@@ -61,7 +61,7 @@ namespace TFStackEmulator.Devices
             LastCallbackTime = Environment.TickCount;
         }
 
-        private void ProcessTemperatureCallback(PacketSink sink)
+        private void ProcessValueCallback(PacketSink sink)
         {
             if (ValueCallbackPeriod == 0)
             {
