@@ -9,20 +9,11 @@ namespace TFStackEmulator.Devices
     {
         private Random Random = new Random();
 
-        protected override byte FunctionGetValue
-        {
-            get { return 1; }
-        }
+        protected override byte FunctionGetValue { get { return 1; } }
 
-        protected override byte FunctionSetValueCallbackPeriod
-        {
-            get { return 3; }
-        }
+        protected override byte FunctionSetValueCallbackPeriod { get { return 3; } }
 
-        protected override byte FunctionValueCallback
-        {
-            get { return 13; }
-        }
+        protected override byte FunctionValueCallback { get { return 13; } }
 
         public RandomAmbientLightBricklet(UID uid)
             : base(uid, 21)
