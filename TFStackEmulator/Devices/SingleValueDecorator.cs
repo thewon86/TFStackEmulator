@@ -1,0 +1,98 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace TFStackEmulator.Devices
+{
+    public abstract class SingleValueDecorator<T> : Device
+    {
+        public UID UID { get; private set; }
+
+        public int ValueCallbackPeriod { get; private set; }
+
+        public T CurrentValue { get; set; }
+
+        private Device DecoratedDevice;
+
+        private byte FunctionGetValue;
+
+        private byte FunctionSetValueCallbackPeriod;
+
+        private byte FunctionValueCallback;
+
+        private T LastCallbackValue;
+        private long LastCallbackTime;
+
+        protected SingleValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte valueCB, Device decoratedDevice = null)
+        {
+            UID = uid;
+            FunctionGetValue = getValue;
+            FunctionSetValueCallbackPeriod = setCBPeriod;
+            FunctionValueCallback = valueCB;
+            DecoratedDevice = decoratedDevice;
+        }
+
+        public Packet HandleRequest(Packet packet)
+        {
+            if (packet.FunctionID == FunctionGetValue)
+            {
+                packet.Payload = GetBytesForValue(CurrentValue);
+                return packet;
+            }
+            if (packet.FunctionID == FunctionSetValueCallbackPeriod)
+            {
+                ValueCallbackPeriod = BitConverter.ToInt32(packet.Payload, 0);
+                ResetValueCallback();
+                if (packet.ResponseExpected)
+                {
+                    packet.PayloadSize = 0;
+                    return packet;
+                }
+            }
+
+            if (DecoratedDevice != null)
+            {
+                return DecoratedDevice.HandleRequest(packet);
+            }
+
+            Console.WriteLine("Unhandled Function: {0}", packet.FunctionID);
+            return null;
+        }
+
+        protected abstract byte[] GetBytesForValue(T value); //FIXME: this and the subclasses should not be needed!
+
+        public void OnTick(PacketSink sink)
+        {
+            ProcessValueCallback(sink);
+            if (DecoratedDevice != null)
+            {
+                DecoratedDevice.OnTick(sink);
+            }
+        }
+
+        private void ResetValueCallback()
+        {
+            LastCallbackValue = CurrentValue;
+            LastCallbackTime = Environment.TickCount;
+        }
+
+        private void ProcessValueCallback(PacketSink sink)
+        {
+            if (ValueCallbackPeriod == 0)
+            {
+                return;
+            }
+
+            long elapsedTime = Environment.TickCount - LastCallbackTime;
+            if (elapsedTime > ValueCallbackPeriod && !CurrentValue.Equals(LastCallbackValue))
+            {
+                var packet = new Packet(UID, 0, FunctionValueCallback, 0, false);
+                packet.Payload = GetBytesForValue(CurrentValue);
+                sink.SendPacket(packet);
+
+                ResetValueCallback();
+            }
+        }
+    }
+}
