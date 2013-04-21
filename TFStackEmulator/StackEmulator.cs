@@ -15,6 +15,7 @@ namespace TFStackEmulator
         public delegate void ResponseEventHandler(object sender, ResponseEventArgs args);
 
         private Dictionary<UID, Device> Devices = new Dictionary<UID, Device>();
+        private bool RunSimulation;
 
         private Thread SimulationThread;
 
@@ -22,6 +23,13 @@ namespace TFStackEmulator
 
         public StackEmulator()
         {
+            PrepareSimulation();
+        }
+
+        private void PrepareSimulation()
+        {
+            RunSimulation = true;
+
             SimulationThread = new Thread(SimulationLoop);
             SimulationThread.Name = "Stack-Simulation";
             SimulationThread.IsBackground = true;
@@ -30,7 +38,7 @@ namespace TFStackEmulator
         private void SimulationLoop()
         {
             PacketSink sink = new DelegatePacketSink(OnResponse);
-            while (true)
+            while (RunSimulation)
             {
                 Packet request;
                 if (RequestQueue.TryDequeue(out request, 1))
@@ -47,7 +55,19 @@ namespace TFStackEmulator
 
         public void Start()
         {
+            if (SimulationThread.IsAlive)
+            {
+                throw new InvalidOperationException("Cannot start the simulation when it is already running");
+            }
+
             SimulationThread.Start();
+        }
+
+        public void Stop()
+        {
+            RunSimulation = false;
+            SimulationThread.Join();
+            PrepareSimulation();
         }
 
         public void AddDevice(Device device)
@@ -61,6 +81,19 @@ namespace TFStackEmulator
         }
 
         private void RouteAndDispatchRequest(Packet packet)
+        {
+            try
+            {
+                TryRouteAndDispatchRequest(packet);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An unexpected and unhandled error occured while handling a request:");
+                Console.WriteLine(e);
+            }
+        }
+
+        private void TryRouteAndDispatchRequest(Packet packet)
         {
             if (packet.UID.Equals(BroadcastUID))
             {
