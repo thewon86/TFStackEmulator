@@ -9,15 +9,15 @@ namespace TFStackEmulator.Devices
     {
         private Random Random = new Random();
 
-        private UInt16ValueDecorator Illuminance;
-        private UInt16ValueDecorator AnalogValue;
+        private ValueDecorator<UInt16> Illuminance;
+        private ValueDecorator<UInt16> AnalogValue;
         private Device Decorators;
 
         public RandomAmbientLightBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletAmbientLight)
         {
-            AnalogValue = new UInt16ValueDecorator(UID, 2, 5, 6, 14);
-            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 4, 13, AnalogValue);
+            AnalogValue = new ValueDecorator<UInt16>(UID, 2, 5, 6, 14);
+            Illuminance = new ValueDecorator<UInt16>(UID, 1, 3, 4, 13, AnalogValue);
             Decorators = Illuminance;
 
             Illuminance.CurrentValue = 5000;

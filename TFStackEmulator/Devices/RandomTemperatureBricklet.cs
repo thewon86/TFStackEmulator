@@ -8,14 +8,14 @@ namespace TFStackEmulator.Devices
 {
     class RandomTemperatureBricklet : EnumeratableDevice
     {
-        private Int16ValueDecorator Temperature;
+        private ValueDecorator<Int16> Temperature;
 
         private Random Random = new Random();
 
         public RandomTemperatureBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletTemperature)
         {
-            Temperature = new Int16ValueDecorator(UID, 1, 2, 3, 8);
+            Temperature = new ValueDecorator<Int16>(UID, 1, 2, 3, 8);
             Temperature.CurrentValue = 2300;
         }
 

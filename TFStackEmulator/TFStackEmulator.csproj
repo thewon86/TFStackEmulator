@@ -42,18 +42,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base58.cs" />
+    <Compile Include="BinaryConverter.cs" />
     <Compile Include="BlockingQueue.cs" />
     <Compile Include="DelegatePacketSink.cs" />
     <Compile Include="Devices\Device.cs" />
     <Compile Include="Devices\DeviceIdentifier.cs" />
     <Compile Include="Devices\EnumeratableDevice.cs" />
-    <Compile Include="Devices\Int16ValueDecorator.cs" />
-    <Compile Include="Devices\Int32ValueDecorator.cs" />
     <Compile Include="Devices\RandomAmbientLightBricklet.cs" />
     <Compile Include="Devices\RandomBarometerBricklet.cs" />
     <Compile Include="Devices\RandomTemperatureBricklet.cs" />
-    <Compile Include="Devices\SingleValueDecorator.cs" />
-    <Compile Include="Devices\UInt16ValueDecorator.cs" />
+    <Compile Include="Devices\ValueDecorator.cs" />
     <Compile Include="LEConverter.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketSink.cs" />

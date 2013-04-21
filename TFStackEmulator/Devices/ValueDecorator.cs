@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TFStackEmulator.Devices
 {
-    public abstract class SingleValueDecorator<T> : Device
+    public class ValueDecorator<T> : Device
     {
         public UID UID { get; private set; }
 
@@ -26,12 +26,12 @@ namespace TFStackEmulator.Devices
         private T LastCallbackValue;
         private long LastCallbackTime;
 
-        protected SingleValueDecorator(UID uid, byte getValue, Device decoratedDevice = null)
+        public ValueDecorator(UID uid, byte getValue, Device decoratedDevice = null)
             : this(uid, getValue, 0, 0, 0, decoratedDevice)
         {
         }
 
-        protected SingleValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte getCBPeriod, byte valueCB, Device decoratedDevice = null)
+        public ValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte getCBPeriod, byte valueCB, Device decoratedDevice = null)
         {
             UID = uid;
             FunctionGetValue = getValue;
@@ -45,7 +45,7 @@ namespace TFStackEmulator.Devices
         {
             if (packet.FunctionID == FunctionGetValue)
             {
-                packet.Payload = GetBytesForValue(CurrentValue);
+                packet.Payload = LEConverter.GetConverter<T>().GetBytes(CurrentValue);
                 return packet;
             }
             if (packet.FunctionID == FunctionSetValueCallbackPeriod)
@@ -73,8 +73,6 @@ namespace TFStackEmulator.Devices
             return null;
         }
 
-        protected abstract byte[] GetBytesForValue(T value); //FIXME: this and the subclasses should not be needed!
-
         public void OnTick(PacketSink sink)
         {
             ProcessValueCallback(sink);
@@ -101,7 +99,7 @@ namespace TFStackEmulator.Devices
             if (elapsedTime > ValueCallbackPeriod && !CurrentValue.Equals(LastCallbackValue))
             {
                 var packet = new Packet(UID, 0, FunctionValueCallback, 0, false);
-                packet.Payload = GetBytesForValue(CurrentValue);
+                packet.Payload = LEConverter.GetConverter<T>().GetBytes(CurrentValue);
                 sink.SendPacket(packet);
 
                 ResetValueCallback();

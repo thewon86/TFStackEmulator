@@ -46,7 +46,7 @@ namespace TFStackEmulator
 
         private Packet(byte[] data)
         {
-            UID = new UID(LEConverter.IntFrom(0, data));
+            UID = new UID(BitConverter.ToInt32(data, 0));
             PayloadSize = (byte)(data[4] - HeaderSize);
             FunctionID = data[5];
             SequenceNumber = (byte)((((int)data[6]) >> 4) & 0x0F);
@@ -56,8 +56,7 @@ namespace TFStackEmulator
 
         public void WriteTo(Stream stream)
         {
-            byte[] uidBuffer = new byte[4];
-            LEConverter.To((int)UID, 0, uidBuffer);
+            byte[] uidBuffer = BitConverter.GetBytes((int)UID);
             stream.Write(uidBuffer, 0, uidBuffer.Length);
 
             stream.WriteByte((byte)(HeaderSize + PayloadSize));
