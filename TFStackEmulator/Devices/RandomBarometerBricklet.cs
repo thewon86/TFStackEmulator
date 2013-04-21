@@ -19,7 +19,7 @@ namespace TFStackEmulator.Devices
         {
             AirPressure = new Int32ValueDecorator(UID, 1, 3, 4, 15);
             Altitude = new Int32ValueDecorator(UID, 2, 5, 6, 16, AirPressure);
-            Temperature = new Int16ValueDecorator(UID, 14, 0, 0, 0, Altitude);
+            Temperature = new Int16ValueDecorator(UID, 14, Altitude);
             Decorators = Temperature;
 
             AirPressure.CurrentValue = 200000;

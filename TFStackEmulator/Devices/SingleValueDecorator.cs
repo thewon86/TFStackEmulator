@@ -26,6 +26,11 @@ namespace TFStackEmulator.Devices
         private T LastCallbackValue;
         private long LastCallbackTime;
 
+        protected SingleValueDecorator(UID uid, byte getValue, Device decoratedDevice = null)
+            : this(uid, getValue, 0, 0, 0, decoratedDevice)
+        {
+        }
+
         protected SingleValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte getCBPeriod, byte valueCB, Device decoratedDevice = null)
         {
             UID = uid;
