@@ -16,8 +16,11 @@ namespace TFStackEmulator
             var device = new RandomBarometerBricklet(new UID("myu1d"));
             var device2 = new RandomAmbientLightBricklet(new UID("myu2d"));
             device2.Position = 'b';
+            var device3 = new RandomTemperatureBricklet(new UID("myu3d"));
+            device3.Position = 'c';
             emulator.AddDevice(device);
             emulator.AddDevice(device2);
+            emulator.AddDevice(device3);
 
             emulator.Start();
 

@@ -53,7 +53,7 @@
     <Compile Include="Devices\RandomBarometerBricklet.cs" />
     <Compile Include="Devices\RandomTemperatureBricklet.cs" />
     <Compile Include="Devices\SingleValueDecorator.cs" />
-    <Compile Include="Devices\SingleValueDevice.cs" />
+    <Compile Include="Devices\UInt16ValueDecorator.cs" />
     <Compile Include="LEConverter.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="PacketSink.cs" />

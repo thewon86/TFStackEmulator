@@ -5,39 +5,36 @@ using System.Text;
 
 namespace TFStackEmulator.Devices
 {
-    public class RandomAmbientLightBricklet : SingleValueDevice<UInt16>
+    public class RandomAmbientLightBricklet : EnumeratableDevice
     {
         private Random Random = new Random();
 
-        protected override byte FunctionGetValue { get { return 1; } }
-
-        protected override byte FunctionSetValueCallbackPeriod { get { return 3; } }
-
-        protected override byte FunctionValueCallback { get { return 13; } }
+        private UInt16ValueDecorator Illuminance;
 
         public RandomAmbientLightBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletAmbientLight)
         {
-            CurrentValue = 5000;
+            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 13);
+            Illuminance.CurrentValue = 5000;
         }
 
-        protected override byte[] GetBytesForValue(ushort value)
+        protected override Packet OnUnhandledRequest(Packet packet)
         {
-            return BitConverter.GetBytes(value);
+            return Illuminance.HandleRequest(packet);
         }
 
         public override void OnTick(PacketSink sink)
         {
             if (Random.Next(2) == 0)
             {
-                CurrentValue++;
+                Illuminance.CurrentValue++;
             }
             else
             {
-                CurrentValue--;
+                Illuminance.CurrentValue--;
             }
 
-            base.OnTick(sink);
+            Illuminance.OnTick(sink);
         }
     }
 }
