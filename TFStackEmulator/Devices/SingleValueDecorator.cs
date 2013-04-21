@@ -9,7 +9,7 @@ namespace TFStackEmulator.Devices
     {
         public UID UID { get; private set; }
 
-        public int ValueCallbackPeriod { get; private set; }
+        public uint ValueCallbackPeriod { get; private set; }
 
         public T CurrentValue { get; set; }
 
@@ -19,16 +19,19 @@ namespace TFStackEmulator.Devices
 
         private byte FunctionSetValueCallbackPeriod;
 
+        private byte FunctionGetValueCallbackPeriod;
+
         private byte FunctionValueCallback;
 
         private T LastCallbackValue;
         private long LastCallbackTime;
 
-        protected SingleValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte valueCB, Device decoratedDevice = null)
+        protected SingleValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte getCBPeriod, byte valueCB, Device decoratedDevice = null)
         {
             UID = uid;
             FunctionGetValue = getValue;
             FunctionSetValueCallbackPeriod = setCBPeriod;
+            FunctionGetValueCallbackPeriod = getCBPeriod;
             FunctionValueCallback = valueCB;
             DecoratedDevice = decoratedDevice;
         }
@@ -42,13 +45,18 @@ namespace TFStackEmulator.Devices
             }
             if (packet.FunctionID == FunctionSetValueCallbackPeriod)
             {
-                ValueCallbackPeriod = BitConverter.ToInt32(packet.Payload, 0);
+                ValueCallbackPeriod = BitConverter.ToUInt32(packet.Payload, 0);
                 ResetValueCallback();
                 if (packet.ResponseExpected)
                 {
                     packet.PayloadSize = 0;
                     return packet;
                 }
+            }
+            if (packet.FunctionID == FunctionGetValueCallbackPeriod)
+            {
+                packet.Payload = BitConverter.GetBytes(ValueCallbackPeriod);
+                return packet;
             }
 
             if (DecoratedDevice != null)

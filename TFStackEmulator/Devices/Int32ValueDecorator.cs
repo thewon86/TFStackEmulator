@@ -7,8 +7,8 @@ namespace TFStackEmulator.Devices
 {
     class Int32ValueDecorator : SingleValueDecorator<Int32>
     {
-        public Int32ValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte valueCB, Device decoratedDevice = null)
-            : base(uid, getValue, setCBPeriod, valueCB, decoratedDevice)
+        public Int32ValueDecorator(UID uid, byte getValue, byte setCBPeriod, byte getCBPeriod, byte valueCB, Device decoratedDevice = null)
+            : base(uid, getValue, setCBPeriod, getCBPeriod, valueCB, decoratedDevice)
         {
         }
 

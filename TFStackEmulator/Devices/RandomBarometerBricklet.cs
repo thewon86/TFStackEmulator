@@ -17,9 +17,9 @@ namespace TFStackEmulator.Devices
         public RandomBarometerBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletBarometer)
         {
-            AirPressure = new Int32ValueDecorator(UID, 1, 3, 15);
-            Altitude = new Int32ValueDecorator(UID, 2, 5, 16, AirPressure);
-            Temperature = new Int16ValueDecorator(UID, 14, 0, 0, Altitude);
+            AirPressure = new Int32ValueDecorator(UID, 1, 3, 4, 15);
+            Altitude = new Int32ValueDecorator(UID, 2, 5, 6, 16, AirPressure);
+            Temperature = new Int16ValueDecorator(UID, 14, 0, 0, 0, Altitude);
             Decorators = Temperature;
 
             AirPressure.CurrentValue = 200000;

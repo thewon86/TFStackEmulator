@@ -16,8 +16,8 @@ namespace TFStackEmulator.Devices
         public RandomAmbientLightBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletAmbientLight)
         {
-            AnalogValue = new UInt16ValueDecorator(UID, 2, 5, 14);
-            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 13, AnalogValue);
+            AnalogValue = new UInt16ValueDecorator(UID, 2, 5, 6, 14);
+            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 4, 13, AnalogValue);
             Decorators = Illuminance;
 
             Illuminance.CurrentValue = 5000;
