@@ -10,17 +10,22 @@ namespace TFStackEmulator.Devices
         private Random Random = new Random();
 
         private UInt16ValueDecorator Illuminance;
+        private UInt16ValueDecorator AnalogValue;
+        private Device Decorators;
 
         public RandomAmbientLightBricklet(UID uid)
             : base(uid, DeviceIdentifier.BrickletAmbientLight)
         {
-            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 13);
+            AnalogValue = new UInt16ValueDecorator(UID, 2, 5, 14);
+            Illuminance = new UInt16ValueDecorator(UID, 1, 3, 13, AnalogValue);
+            Decorators = Illuminance;
+
             Illuminance.CurrentValue = 5000;
         }
 
         protected override Packet OnUnhandledRequest(Packet packet)
         {
-            return Illuminance.HandleRequest(packet);
+            return Decorators.HandleRequest(packet);
         }
 
         public override void OnTick(PacketSink sink)
@@ -34,7 +39,9 @@ namespace TFStackEmulator.Devices
                 Illuminance.CurrentValue--;
             }
 
-            Illuminance.OnTick(sink);
+            AnalogValue.CurrentValue = Illuminance.CurrentValue; //TODO: more realistic implementation
+
+            Decorators.OnTick(sink);
         }
     }
 }
