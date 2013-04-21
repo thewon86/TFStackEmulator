@@ -53,33 +53,6 @@ namespace TFStackEmulator
             }
         }
 
-        public void Start()
-        {
-            if (SimulationThread.IsAlive)
-            {
-                throw new InvalidOperationException("Cannot start the simulation when it is already running");
-            }
-
-            SimulationThread.Start();
-        }
-
-        public void Stop()
-        {
-            RunSimulation = false;
-            SimulationThread.Join();
-            PrepareSimulation();
-        }
-
-        public void AddDevice(Device device)
-        {
-            Devices.Add(device.UID, device);
-        }
-
-        public void HandleRequest(Packet packet)
-        {
-            RequestQueue.Enqueue(packet);
-        }
-
         private void RouteAndDispatchRequest(Packet packet)
         {
             try
@@ -132,6 +105,33 @@ namespace TFStackEmulator
             {
                 handler(this, new ResponseEventArgs(response));
             }
+        }
+
+        public void Start()
+        {
+            if (SimulationThread.IsAlive)
+            {
+                throw new InvalidOperationException("Cannot start the simulation when it is already running");
+            }
+
+            SimulationThread.Start();
+        }
+
+        public void Stop()
+        {
+            RunSimulation = false;
+            SimulationThread.Join();
+            PrepareSimulation();
+        }
+
+        public void AddDevice(Device device)
+        {
+            Devices.Add(device.UID, device);
+        }
+
+        public void HandleRequest(Packet packet)
+        {
+            RequestQueue.Enqueue(packet);
         }
     }
 
