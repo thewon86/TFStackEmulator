@@ -8,6 +8,7 @@ namespace TFStackEmulator.Devices
 {
     public abstract class EnumeratableDevice : Device
     {
+        private const int GET_IDENTITY_FUNCTIONID = 255;
         private const int ENUMERATE_FUNCTIONID = 254;
         private const int ENUMERATE_CALLBACK_FUNCTIONID = 253;
 
@@ -41,6 +42,12 @@ namespace TFStackEmulator.Devices
             {
                 return CreateEnumerateCallback();
             }
+            else if (packet.FunctionID == GET_IDENTITY_FUNCTIONID)
+            {
+                packet.PayloadSize = 25;
+                CreateIdentificationPayload(packet);
+                return packet;
+            }
             else
             {
                 return OnUnhandledRequest(packet);
@@ -49,9 +56,18 @@ namespace TFStackEmulator.Devices
 
         private Packet CreateEnumerateCallback()
         {
-            //TODO: properties for callback-values
             var callbackPacket = new Packet(UID, 26, ENUMERATE_CALLBACK_FUNCTIONID, 0, true);
-            using (MemoryStream stream = new MemoryStream(callbackPacket.Payload))
+            CreateIdentificationPayload(callbackPacket);
+            return callbackPacket;
+        }
+
+        /// <summary>
+        /// Can be useed for GetIdentity-calls and enumerate-callback
+        /// Payload-Length must be set (enumerate-callback is 1 Byte longer)
+        /// </summary>
+        private void CreateIdentificationPayload(Packet packet)
+        {
+            using (MemoryStream stream = new MemoryStream(packet.Payload))
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.ASCII))
             {
                 char[] myUID = CreateUIDCharArray(UID);
@@ -66,9 +82,7 @@ namespace TFStackEmulator.Devices
                 writer.Write(FirmwareVersion.Minor);
                 writer.Write(FirmwareVersion.Revision);
                 writer.Write((UInt16)DeviceIdentifier);
-                writer.Write((byte)0);
             }
-            return callbackPacket;
         }
 
         private char[] CreateUIDCharArray(UID uid)
