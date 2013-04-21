@@ -23,7 +23,7 @@ namespace TFStackEmulator.Devices
         private Random Random = new Random();
 
         public RandomTemperatureBricklet(UID uid)
-            : base(uid, 216)
+            : base(uid, DeviceIdentifier.BrickletTemperature)
         {
             CurrentTemperature = 2300;
         }

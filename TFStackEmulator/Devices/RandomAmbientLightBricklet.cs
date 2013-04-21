@@ -16,7 +16,7 @@ namespace TFStackEmulator.Devices
         protected override byte FunctionValueCallback { get { return 13; } }
 
         public RandomAmbientLightBricklet(UID uid)
-            : base(uid, 21)
+            : base(uid, DeviceIdentifier.BrickletAmbientLight)
         {
             CurrentValue = 5000;
         }

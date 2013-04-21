@@ -22,7 +22,7 @@ namespace TFStackEmulator.Devices
         private T LastCallbackValue;
         private long LastCallbackTime;
 
-        protected SingleValueDevice(UID uid, UInt16 deviceIdentifier)
+        protected SingleValueDevice(UID uid, DeviceIdentifier deviceIdentifier)
             : base(uid, deviceIdentifier)
         {
         }

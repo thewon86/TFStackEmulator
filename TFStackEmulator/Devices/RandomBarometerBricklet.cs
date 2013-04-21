@@ -15,7 +15,7 @@ namespace TFStackEmulator.Devices
         private Random Random = new Random();
 
         public RandomBarometerBricklet(UID uid)
-            : base(uid, 221)
+            : base(uid, DeviceIdentifier.BrickletBarometer)
         {
             AirPressure = new Int32ValueDecorator(UID, 1, 3, 15);
             Altitude = new Int32ValueDecorator(UID, 2, 5, 16, AirPressure);

@@ -45,6 +45,7 @@
     <Compile Include="BlockingQueue.cs" />
     <Compile Include="DelegatePacketSink.cs" />
     <Compile Include="Devices\Device.cs" />
+    <Compile Include="Devices\DeviceIdentifier.cs" />
     <Compile Include="Devices\EnumeratableDevice.cs" />
     <Compile Include="Devices\Int16ValueDecorator.cs" />
     <Compile Include="Devices\Int32ValueDecorator.cs" />

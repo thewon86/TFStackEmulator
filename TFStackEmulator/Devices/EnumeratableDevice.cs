@@ -21,9 +21,9 @@ namespace TFStackEmulator.Devices
 
         public Version FirmwareVersion { get; set; }
 
-        public UInt16 DeviceIdentifier { get; private set; }
+        public DeviceIdentifier DeviceIdentifier { get; private set; }
 
-        protected EnumeratableDevice(UID uid, UInt16 deviceIdentifier)
+        protected EnumeratableDevice(UID uid, DeviceIdentifier deviceIdentifier)
         {
             UID = uid;
             DeviceIdentifier = deviceIdentifier;
@@ -65,7 +65,7 @@ namespace TFStackEmulator.Devices
                 writer.Write(FirmwareVersion.Major);
                 writer.Write(FirmwareVersion.Minor);
                 writer.Write(FirmwareVersion.Revision);
-                writer.Write(DeviceIdentifier);
+                writer.Write((UInt16)DeviceIdentifier);
                 writer.Write((byte)0);
             }
             return callbackPacket;
