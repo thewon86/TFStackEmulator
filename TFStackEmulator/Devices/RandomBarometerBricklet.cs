@@ -27,7 +27,7 @@ namespace TFStackEmulator.Devices
             Temperature.CurrentValue = 2300;
         }
 
-        protected override Packet OnUnhandledRequest(Packet packet)
+        protected override Packet DoHandleRequest(Packet packet)
         {
             return Decorators.HandleRequest(packet);
         }

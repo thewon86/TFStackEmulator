@@ -23,7 +23,7 @@ namespace TFStackEmulator.Devices
             Illuminance.CurrentValue = 5000;
         }
 
-        protected override Packet OnUnhandledRequest(Packet packet)
+        protected override Packet DoHandleRequest(Packet packet)
         {
             return Decorators.HandleRequest(packet);
         }

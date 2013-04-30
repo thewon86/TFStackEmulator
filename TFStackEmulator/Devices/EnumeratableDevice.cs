@@ -34,7 +34,7 @@ namespace TFStackEmulator.Devices
             FirmwareVersion = new Version(1, 0, 0);
         }
 
-        protected abstract Packet OnUnhandledRequest(Packet packet);
+        protected abstract Packet DoHandleRequest(Packet packet);
 
         public Packet HandleRequest(Packet packet)
         {
@@ -50,7 +50,7 @@ namespace TFStackEmulator.Devices
             }
             else
             {
-                return OnUnhandledRequest(packet);
+                return DoHandleRequest(packet);
             }
         }
 
